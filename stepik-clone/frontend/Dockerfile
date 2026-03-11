@@ -7,13 +7,12 @@ WORKDIR /app
 # Копируем все файлы вашего репозитория в контейнер
 COPY . .
 
-# Переходим именно в ту папку, где лежит код Flutter
-WORKDIR /app/stepik-clone/frontend
+# Мы уже в папке /app, где лежат файлы Flutter из COPY
 
 # Включаем поддержку Web и создаем нужные файлы.
 # Флаг --project-name stepik_clone обязателен, чтобы обойти ошибку с дефисом в имени папки!
 RUN flutter config --enable-web
-RUN flutter create --platforms=web --project-name stepik_clone .
+# RUN flutter create --platforms=web --project-name stepik_clone .
 
 # Скачиваем зависимости
 RUN flutter pub get
@@ -23,13 +22,13 @@ RUN flutter pub get
 # RUN dart run build_runner build --delete-conflicting-outputs
 
 # Собираем релизную веб-версию
-RUN flutter build web --release
+RUN flutter build web --release -v
 
 # Этап 2: Раздача статики через Nginx
 FROM nginx:alpine
 
-# Копируем собранный проект из первого этапа в папку Nginx
-COPY --from=build /app/stepik-clone/frontend/build/web /usr/share/nginx/html
+# Копируем собранный проект из первого этапа (/app/build/web)
+COPY --from=build /app/build/web /usr/share/nginx/html
 
 # Открываем 80 порт
 EXPOSE 80
