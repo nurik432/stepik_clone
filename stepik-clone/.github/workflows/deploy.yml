@@ -21,13 +21,13 @@ jobs:
           python-version: "3.11"
       - name: Install dependencies
         run: |
-          cd backend
+          cd stepik-clone/backend
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest httpx
       - name: Run tests
         run: |
-          cd backend
+          cd stepik-clone/backend
           pytest
 
   build-and-push:
@@ -57,7 +57,7 @@ jobs:
       - name: Build and push Backend image
         uses: docker/build-push-action@v5
         with:
-          context: ./backend
+          context: ./stepik-clone/backend
           push: true
           tags: ${{ steps.meta-backend.outputs.tags }}
           labels: ${{ steps.meta-backend.outputs.labels }}
@@ -71,7 +71,7 @@ jobs:
       - name: Build and push Frontend image
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend
+          context: ./stepik-clone/frontend
           push: true
           tags: ${{ steps.meta-frontend.outputs.tags }}
           labels: ${{ steps.meta-frontend.outputs.labels }}
@@ -90,8 +90,9 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.prod.yml"
+          source: "stepik-clone/docker-compose.prod.yml"
           target: "~/stepik-clone"
+          strip_components: 1
 
       - name: Execute deployment commands via SSH
         uses: appleboy/ssh-action@v1.0.3

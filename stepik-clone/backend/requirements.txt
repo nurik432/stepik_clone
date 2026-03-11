@@ -10,3 +10,6 @@ passlib[bcrypt]
 pydantic
 pydantic-settings
 boto3
+pytest
+httpx
+psycopg
