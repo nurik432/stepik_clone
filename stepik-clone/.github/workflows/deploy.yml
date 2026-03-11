@@ -28,6 +28,7 @@ jobs:
       - name: Run tests
         run: |
           cd stepik-clone/backend
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
           pytest
 
   build-and-push:
