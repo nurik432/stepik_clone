@@ -17,7 +17,7 @@ services:
     restart: always
 
   backend:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/stepik-backend:latest
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/stepik-backend:main
     container_name: stepik-backend-prod
     restart: always
     depends_on:
@@ -31,7 +31,7 @@ services:
       - "8000:8000"
 
   frontend:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/stepik-frontend:latest
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/stepik-frontend:main
     container_name: stepik-frontend-prod
     restart: always
     ports:
