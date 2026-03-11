@@ -73,10 +73,12 @@ mkdir -p ~/stepik-clone
 
 To view logs on the server:
 ```bash
+cd ~/stepik-clone
 docker compose -f docker-compose.prod.yml logs -f
 ```
 
 To stop the services:
 ```bash
+cd ~/stepik-clone
 docker compose -f docker-compose.prod.yml down
 ```
