@@ -1,0 +1,43 @@
+# Production version of docker-compose
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: stepik-db-prod
+    restart: always
+    environment:
+      POSTGRES_USER: stepik_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: stepik_prod
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: stepik-redis-prod
+    restart: always
+
+  backend:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/stepik-backend:latest
+    container_name: stepik-backend-prod
+    restart: always
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DATABASE_URL=postgresql://stepik_user:${DB_PASSWORD}@db:5432/stepik_prod
+      - REDIS_HOST=redis
+      - APP_JWT_SECRET=${JWT_SECRET}
+    ports:
+      - "8000:8000"
+
+  frontend:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/stepik-frontend:latest
+    container_name: stepik-frontend-prod
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_prod_data:
