@@ -12,6 +12,7 @@ RUN git clone -b stable https://github.com/flutter/flutter.git /usr/local/flutte
 ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
 # Pre-download artifacts
+RUN flutter config --no-analytics
 RUN flutter config --enable-web
 RUN flutter precache --web
 RUN flutter doctor -v
@@ -21,7 +22,7 @@ WORKDIR /app
 COPY . .
 RUN flutter create --platforms=web .
 RUN flutter pub get
-RUN flutter build web --release
+RUN flutter build web --release -v
 
 # Production server: Nginx
 FROM nginx:alpine
