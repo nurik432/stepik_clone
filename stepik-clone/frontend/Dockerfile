@@ -1,31 +1,28 @@
-# frontend/Dockerfile
-# Multi-stage build for Flutter Web
-FROM ubuntu:22.04 AS build
+# Используем официальный образ с уже установленным Flutter
+FROM ghcr.io/cirruslabs/flutter:stable AS build
 
-# Prerequisites
-RUN apt-get update && apt-get install -y \
-    curl git unzip xz-utils libglu1-mesa ca-certificates wget \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Flutter (Stable channel)
-RUN git clone -b stable https://github.com/flutter/flutter.git /usr/local/flutter
-ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
-
-# Pre-download artifacts
-RUN flutter config --no-analytics
-RUN flutter config --enable-web
-RUN flutter precache --web
-RUN flutter doctor -v
-
-# Build
 WORKDIR /app
+
+# Копируем все файлы репозитория в контейнер
 COPY . .
+
+# Переходим в папку с Flutter-проектом
+WORKDIR /app/stepik-clone
+
+# Активируем web-платформу и подтягиваем зависимости
 RUN flutter create --platforms=web .
 RUN flutter pub get
-RUN flutter build web --release -v
 
-# Production server: Nginx
+# Раскомментируйте строку ниже, если в проекте используется кодогенерация (freezed, json_serializable)
+# RUN dart run build_runner build --delete-conflicting-outputs
+
+# Собираем веб-версию
+RUN flutter build web --release
+
+# Поднимаем легкий Nginx сервер для раздачи собранного приложения
 FROM nginx:alpine
-COPY --from=build /app/build/web /usr/share/nginx/html
+# Копируем собранные файлы (убедитесь, что путь соответствует WORKDIR)
+COPY --from=build /app/stepik-clone/build/web /usr/share/nginx/html
+
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD["nginx", "-g", "daemon off;"]
