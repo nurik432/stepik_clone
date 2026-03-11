@@ -24,6 +24,16 @@ sudo sh get-docker.sh
 sudo apt install -y docker-compose-plugin
 ```
 
+## Step 2: GHCR Package Visibility (FIX for "denied" error)
+
+По умолчанию GitHub делает ваши пакеты (образы) приватными. Чтобы сервер мог их скачать:
+1. Зайдите в ваш профиль GitHub -> вкладка **Packages**.
+2. Найдите `stepik-backend` и `stepik-frontend`.
+3. Зайдите в каждый: **Package Settings** -> прокрутите вниз до **Danger Zone**.
+4. Нажмите **Change visibility** и выберите **Public**.
+
+*Это решит проблему с ошибкой "denied" при выполнении pull.*
+
 ## Step 2: GitHub Secrets & Security
 
 You don't need to manually clone the repository on the VPS. GitHub Actions will handle everything once you set up these secrets in your GitHub repository (**Settings** -> **Secrets and variables** -> **Actions**).
@@ -47,6 +57,20 @@ This allows GitHub to securely log into your server.
     chmod 600 ~/.ssh/authorized_keys
     ```
 4.  **On GitHub**: Create a secret named `SSH_PRIVATE_KEY` and paste the **entire** content of the private `deploy_key` file.
+    Чтобы увидеть содержимое ключа, выполните:
+    ```bash
+    cat ./deploy_key
+    ```
+    (Скопируйте всё, включая `-----BEGIN...` и `-----END...`)
+
+5.  **На сервере**: Покажите публичный ключ, чтобы добавить его:
+    ```bash
+    cat ./deploy_key.pub
+    ```
+    Скопируйте результат и добавьте в `~/.ssh/authorized_keys` на VPS.
+
+> [!IMPORTANT]
+> Строка вида `SHA256:H+1es...` — это **отпечаток** (fingerprint), а не сам ключ. Для настройки вам нужен именно текст из файлов `deploy_key` и `deploy_key.pub`.
 
 ### 3. DB_PASSWORD & JWT_SECRET
 - `DB_PASSWORD`: Any strong password for your database.
