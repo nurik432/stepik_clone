@@ -1,28 +1,38 @@
-# Используем официальный образ с уже установленным Flutter
+# Этап 1: Сборка Flutter-приложения
 FROM ghcr.io/cirruslabs/flutter:stable AS build
 
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем все файлы репозитория в контейнер
+# Копируем все файлы вашего репозитория в контейнер
 COPY . .
 
-# Переходим в папку с Flutter-проектом
+# Переходим именно в ту папку, где лежит код Flutter
 WORKDIR /app/stepik-clone
 
-# Активируем web-платформу и подтягиваем зависимости
-RUN flutter create --platforms=web .
+# Включаем поддержку Web и создаем нужные файлы.
+# Флаг --project-name stepik_clone обязателен, чтобы обойти ошибку с дефисом в имени папки!
+RUN flutter config --enable-web
+RUN flutter create --platforms=web --project-name stepik_clone .
+
+# Скачиваем зависимости
 RUN flutter pub get
 
-# Раскомментируйте строку ниже, если в проекте используется кодогенерация (freezed, json_serializable)
+# Раскомментируйте строку ниже (уберите #), если вы используете кодогенерацию
+# (например, пакеты freezed, json_serializable, auto_route)
 # RUN dart run build_runner build --delete-conflicting-outputs
 
-# Собираем веб-версию
+# Собираем релизную веб-версию
 RUN flutter build web --release
 
-# Поднимаем легкий Nginx сервер для раздачи собранного приложения
+# Этап 2: Раздача статики через Nginx
 FROM nginx:alpine
-# Копируем собранные файлы (убедитесь, что путь соответствует WORKDIR)
+
+# Копируем собранный проект из первого этапа в папку Nginx
 COPY --from=build /app/stepik-clone/build/web /usr/share/nginx/html
 
+# Открываем 80 порт
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+
+# Запускаем сервер (пробел после CMD добавлен!)
+CMD["nginx", "-g", "daemon off;"]
