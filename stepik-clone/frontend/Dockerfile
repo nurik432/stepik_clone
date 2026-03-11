@@ -35,4 +35,4 @@ COPY --from=build /app/stepik-clone/build/web /usr/share/nginx/html
 EXPOSE 80
 
 # Запускаем сервер (пробел после CMD добавлен!)
-CMD["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off;"]
