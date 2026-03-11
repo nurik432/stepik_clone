@@ -19,6 +19,7 @@ RUN flutter doctor -v
 # Build
 WORKDIR /app
 COPY . .
+RUN flutter create --platforms=web .
 RUN flutter pub get
 RUN flutter build web --release
 
