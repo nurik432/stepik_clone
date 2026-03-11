@@ -8,12 +8,12 @@ WORKDIR /app
 COPY . .
 
 # Переходим именно в ту папку, где лежит код Flutter
-WORKDIR /app/stepik-clone
+WORKDIR /app/stepik-clone/frontend
 
 # Включаем поддержку Web и создаем нужные файлы.
 # Флаг --project-name stepik_clone обязателен, чтобы обойти ошибку с дефисом в имени папки!
 RUN flutter config --enable-web
-# RUN flutter create --platforms=web --project-name stepik_clone .
+RUN flutter create --platforms=web --project-name stepik_clone .
 
 # Скачиваем зависимости
 RUN flutter pub get
@@ -29,7 +29,7 @@ RUN flutter build web --release
 FROM nginx:alpine
 
 # Копируем собранный проект из первого этапа в папку Nginx
-COPY --from=build /app/stepik-clone/build/web /usr/share/nginx/html
+COPY --from=build /app/stepik-clone/frontend/build/web /usr/share/nginx/html
 
 # Открываем 80 порт
 EXPOSE 80
