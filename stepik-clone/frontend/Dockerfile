@@ -13,7 +13,7 @@ WORKDIR /app/stepik-clone
 # Включаем поддержку Web и создаем нужные файлы.
 # Флаг --project-name stepik_clone обязателен, чтобы обойти ошибку с дефисом в имени папки!
 RUN flutter config --enable-web
-RUN flutter create --platforms=web --project-name stepik_clone .
+# RUN flutter create --platforms=web --project-name stepik_clone .
 
 # Скачиваем зависимости
 RUN flutter pub get
