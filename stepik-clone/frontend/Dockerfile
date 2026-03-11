@@ -12,7 +12,7 @@ COPY . .
 # Включаем поддержку Web и создаем нужные файлы.
 # Флаг --project-name stepik_clone обязателен, чтобы обойти ошибку с дефисом в имени папки!
 RUN flutter config --enable-web
-# RUN flutter create --platforms=web --project-name stepik_clone .
+RUN flutter create --platforms=web --project-name stepik_clone .
 
 # Скачиваем зависимости
 RUN flutter pub get
@@ -22,7 +22,7 @@ RUN flutter pub get
 # RUN dart run build_runner build --delete-conflicting-outputs
 
 # Собираем релизную веб-версию
-RUN flutter build web --release -v
+RUN flutter build web --release
 
 # Этап 2: Раздача статики через Nginx
 FROM nginx:alpine
