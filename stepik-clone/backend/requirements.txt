@@ -13,3 +13,4 @@ boto3
 pytest
 httpx
 psycopg
+email-validator

@@ -24,7 +24,7 @@ jobs:
           cd stepik-clone/backend
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest httpx
+          pip install pytest httpx 'pydantic[email]'
       - name: Run tests
         run: |
           cd stepik-clone/backend
