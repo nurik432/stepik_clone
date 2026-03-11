@@ -1,0 +1,44 @@
+# stepik-clone/docker-compose.yml
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: stepik-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: stepik_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: stepik-redis
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    container_name: stepik-backend
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/stepik_db
+      - REDIS_HOST=redis
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build: ./frontend
+    container_name: stepik-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

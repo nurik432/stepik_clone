@@ -1,0 +1,6 @@
+Alembic migrations live here.
+
+Run from `backend/`:
+- `alembic -c alembic.ini revision --autogenerate -m "msg"`
+- `alembic -c alembic.ini upgrade head`
+
