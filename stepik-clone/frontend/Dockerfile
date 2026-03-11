@@ -30,6 +30,9 @@ FROM nginx:alpine
 # Копируем собранный проект из первого этапа (/app/build/web)
 COPY --from=build /app/build/web /usr/share/nginx/html
 
+# Копируем кастомный конфиг Nginx с прокси для /api
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Открываем 80 порт
 EXPOSE 80
 

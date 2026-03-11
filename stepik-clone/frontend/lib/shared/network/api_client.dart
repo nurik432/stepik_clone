@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stepik_clone/shared/network/token_provider.dart';
 
-const String baseUrl = 'http://localhost:8000/api';
+const String baseUrl = '/api';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(BaseOptions(
