@@ -52,7 +52,7 @@ class StudentRepository {
 
   Future<void> submitQuizAttempt(int quizId, double score) async {
     try {
-      await _dio.post('/progress/quiz/$quiz_id', data: {'score': score});
+      await _dio.post('/progress/quiz/$quizId', data: {'score': score});
     } on DioException catch (e) {
       throw Exception(e.response?.data['detail'] ?? "Ошибка отправки теста");
     }

@@ -1,6 +1,7 @@
 // frontend/lib/features/auth/presentation/providers/auth_provider.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stepik_clone/features/auth/data/auth_repository.dart';
+import 'package:stepik_clone/shared/network/token_provider.dart';
 
 // Состояние аутентификации
 class AuthState {
@@ -33,13 +34,15 @@ class AuthState {
 
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
+  final Ref _ref;
 
-  AuthNotifier(this._repository) : super(AuthState());
+  AuthNotifier(this._repository, this._ref) : super(AuthState());
 
   Future<void> login(String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final token = await _repository.login(email, password);
+      _ref.read(authTokenProvider.notifier).state = token;
       state = state.copyWith(isLoading: false, token: token);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -62,11 +65,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   void logout() {
+    _ref.read(authTokenProvider.notifier).state = null;
     state = AuthState();
   }
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final repository = ref.watch(authRepositoryProvider);
-  return AuthNotifier(repository);
+  return AuthNotifier(repository, ref);
 });
