@@ -21,6 +21,9 @@ RUN flutter pub get
 # (например, пакеты freezed, json_serializable, auto_route)
 # RUN dart run build_runner build --delete-conflicting-outputs
 
+# Генерируем файлы локализации (обязательно перед сборкой!)
+RUN flutter gen-l10n
+
 # Собираем релизную веб-версию
 RUN flutter build web --release -v
 
