@@ -24,23 +24,50 @@ sudo sh get-docker.sh
 sudo apt install -y docker-compose-plugin
 ```
 
-## Step 2: GitHub Secrets
+## Step 2: GitHub Secrets & Security
 
-Navigate to your GitHub repository -> **Settings** -> **Secrets and variables** -> **Actions**. Add the following secrets:
+You don't need to manually clone the repository on the VPS. GitHub Actions will handle everything once you set up these secrets in your GitHub repository (**Settings** -> **Secrets and variables** -> **Actions**).
 
-| Secret Name | Description | Example |
-| :--- | :--- | :--- |
-| `SERVER_IP` | Your VPS public IP address | `123.123.123.123` |
-| `SSH_PRIVATE_KEY` | Private SSH key for deployment | `-----BEGIN RSA PRIVATE KEY-----...` |
-| `DB_PASSWORD` | PostgreSQL password | `mypassword123` |
-| `JWT_SECRET` | Secret key for JWT tokens | `generate-a-long-random-string` |
+### 1. SERVER_IP
+This is the public IP address of your VPS. You can find it in your hosting provider's dashboard (e.g., DigitalOcean, Hetzner, AWS).
 
-## Step 3: Deployment Workflow
+### 2. SSH_PRIVATE_KEY
+This allows GitHub to securely log into your server.
 
-The project is configured with GitHub Actions (`.github/workflows/deploy.yml`). 
+**How to generate:**
+1.  Open terminal on your computer and run:
+    ```bash
+    ssh-keygen -t rsa -b 4096 -f ./deploy_key -N ""
+    ```
+2.  This creates two files: `deploy_key` (private) and `deploy_key.pub` (public).
+3.  **On the VPS**: Copy the content of `deploy_key.pub` and add it to the server's authorized list:
+    ```bash
+    mkdir -p ~/.ssh
+    echo "PASTE_CONTENT_OF_DEPLOY_KEY_PUB_HERE" >> ~/.ssh/authorized_keys
+    chmod 600 ~/.ssh/authorized_keys
+    ```
+4.  **On GitHub**: Create a secret named `SSH_PRIVATE_KEY` and paste the **entire** content of the private `deploy_key` file.
 
--   **Automatic**: Every push to the `main` branch will build new Docker images and deploy them to your server.
--   **Manual**: You can trigger the workflow from the **Actions** tab in GitHub.
+### 3. DB_PASSWORD & JWT_SECRET
+- `DB_PASSWORD`: Any strong password for your database.
+- `JWT_SECRET`: A long random string (e.g., 32+ characters). You can generate one with:
+  ```bash
+  openssl rand -hex 32
+  ```
+
+## Step 3: Initial Setup on VPS
+
+Before the first deployment, run this on your VPS to create the target directory:
+```bash
+mkdir -p ~/stepik-clone
+```
+
+## Step 4: Run Deployment
+
+1.  Push your code to the `main` branch on GitHub.
+2.  Go to the **Actions** tab in your GitHub repository.
+3.  You will see the "Build and Deploy" workflow running. 
+4.  Once it finishes (green checkmark), your app is live!
 
 ## Step 4: Maintenance
 
